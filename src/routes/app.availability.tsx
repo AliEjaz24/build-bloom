@@ -15,7 +15,7 @@ function AvailabilityPage() {
     if (!profile) return;
     const { data } = await supabase.from("availability").select("*").eq("teacher_id", profile.id);
     const m: Record<string, string> = {};
-    (data ?? []).forEach((r: { day: number; slot_index: number; status: string }) => { m[`${r.day}-${r.slot_index}`] = r.status; });
+    (data ?? []).forEach((r) => { m[`${r.day}-${r.slot_index}`] = r.status ?? ""; });
     setMap(m);
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [profile?.id]);

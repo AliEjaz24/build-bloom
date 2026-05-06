@@ -9,38 +9,210 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppTimetableRouteImport } from './routes/app.timetable'
+import { Route as AppTermTimetableRouteImport } from './routes/app.term-timetable'
+import { Route as AppRegistrationRouteImport } from './routes/app.registration'
+import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppMakeupRouteImport } from './routes/app.makeup'
+import { Route as AppDataRouteImport } from './routes/app.data'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppCancelRouteImport } from './routes/app.cancel'
+import { Route as AppAvailabilityRouteImport } from './routes/app.availability'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppTimetableRoute = AppTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTermTimetableRoute = AppTermTimetableRouteImport.update({
+  id: '/term-timetable',
+  path: '/term-timetable',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRegistrationRoute = AppRegistrationRouteImport.update({
+  id: '/registration',
+  path: '/registration',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMakeupRoute = AppMakeupRouteImport.update({
+  id: '/makeup',
+  path: '/makeup',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDataRoute = AppDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCancelRoute = AppCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAvailabilityRoute = AppAvailabilityRouteImport.update({
+  id: '/availability',
+  path: '/availability',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/app/availability': typeof AppAvailabilityRoute
+  '/app/cancel': typeof AppCancelRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/data': typeof AppDataRoute
+  '/app/makeup': typeof AppMakeupRoute
+  '/app/notifications': typeof AppNotificationsRoute
+  '/app/registration': typeof AppRegistrationRoute
+  '/app/term-timetable': typeof AppTermTimetableRoute
+  '/app/timetable': typeof AppTimetableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/app/availability': typeof AppAvailabilityRoute
+  '/app/cancel': typeof AppCancelRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/data': typeof AppDataRoute
+  '/app/makeup': typeof AppMakeupRoute
+  '/app/notifications': typeof AppNotificationsRoute
+  '/app/registration': typeof AppRegistrationRoute
+  '/app/term-timetable': typeof AppTermTimetableRoute
+  '/app/timetable': typeof AppTimetableRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/app/availability': typeof AppAvailabilityRoute
+  '/app/cancel': typeof AppCancelRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/data': typeof AppDataRoute
+  '/app/makeup': typeof AppMakeupRoute
+  '/app/notifications': typeof AppNotificationsRoute
+  '/app/registration': typeof AppRegistrationRoute
+  '/app/term-timetable': typeof AppTermTimetableRoute
+  '/app/timetable': typeof AppTimetableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/availability'
+    | '/app/cancel'
+    | '/app/dashboard'
+    | '/app/data'
+    | '/app/makeup'
+    | '/app/notifications'
+    | '/app/registration'
+    | '/app/term-timetable'
+    | '/app/timetable'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/availability'
+    | '/app/cancel'
+    | '/app/dashboard'
+    | '/app/data'
+    | '/app/makeup'
+    | '/app/notifications'
+    | '/app/registration'
+    | '/app/term-timetable'
+    | '/app/timetable'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/login'
+    | '/signup'
+    | '/app/availability'
+    | '/app/cancel'
+    | '/app/dashboard'
+    | '/app/data'
+    | '/app/makeup'
+    | '/app/notifications'
+    | '/app/registration'
+    | '/app/term-timetable'
+    | '/app/timetable'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,21 +220,104 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/timetable': {
+      id: '/app/timetable'
+      path: '/timetable'
+      fullPath: '/app/timetable'
+      preLoaderRoute: typeof AppTimetableRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/term-timetable': {
+      id: '/app/term-timetable'
+      path: '/term-timetable'
+      fullPath: '/app/term-timetable'
+      preLoaderRoute: typeof AppTermTimetableRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/registration': {
+      id: '/app/registration'
+      path: '/registration'
+      fullPath: '/app/registration'
+      preLoaderRoute: typeof AppRegistrationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notifications': {
+      id: '/app/notifications'
+      path: '/notifications'
+      fullPath: '/app/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/makeup': {
+      id: '/app/makeup'
+      path: '/makeup'
+      fullPath: '/app/makeup'
+      preLoaderRoute: typeof AppMakeupRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/data': {
+      id: '/app/data'
+      path: '/data'
+      fullPath: '/app/data'
+      preLoaderRoute: typeof AppDataRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/cancel': {
+      id: '/app/cancel'
+      path: '/cancel'
+      fullPath: '/app/cancel'
+      preLoaderRoute: typeof AppCancelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/availability': {
+      id: '/app/availability'
+      path: '/availability'
+      fullPath: '/app/availability'
+      preLoaderRoute: typeof AppAvailabilityRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppAvailabilityRoute: typeof AppAvailabilityRoute
+  AppCancelRoute: typeof AppCancelRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppDataRoute: typeof AppDataRoute
+  AppMakeupRoute: typeof AppMakeupRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
+  AppRegistrationRoute: typeof AppRegistrationRoute
+  AppTermTimetableRoute: typeof AppTermTimetableRoute
+  AppTimetableRoute: typeof AppTimetableRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAvailabilityRoute: AppAvailabilityRoute,
+  AppCancelRoute: AppCancelRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppDataRoute: AppDataRoute,
+  AppMakeupRoute: AppMakeupRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
+  AppRegistrationRoute: AppRegistrationRoute,
+  AppTermTimetableRoute: AppTermTimetableRoute,
+  AppTimetableRoute: AppTimetableRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

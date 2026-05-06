@@ -31,8 +31,8 @@ function SignupPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
-    if (!emailValid) { setErr("Email must be a valid @ibitpu.edu.pk address."); return; }
-    if (password.length < 8) { setErr("Password must be at least 8 characters."); return; }
+    if (!emailValid) { const m="Email must be a valid @ibitpu.edu.pk address."; setErr(m); toast.error(m); return; }
+    if (password.length < 8) { const m="Password must be at least 8 characters."; setErr(m); toast.error(m); return; }
     setLoading(true);
     const meta: Record<string, string> = { full_name: fullName, role };
     if (role === "student") { meta.program = program; meta.batch = String(batch); meta.section = section; }
@@ -42,7 +42,14 @@ function SignupPage() {
       options: { emailRedirectTo: `${window.location.origin}/app/dashboard`, data: meta },
     });
     setLoading(false);
-    if (error) { setErr(error.message); return; }
+    if (error) {
+      const msg = /weak.*password|pwned/i.test(error.message)
+        ? "This password has appeared in known data breaches. Please choose a stronger, unique password."
+        : /already.*registered|user.*exists/i.test(error.message)
+        ? "An account with this email already exists. Please sign in instead."
+        : error.message;
+      setErr(msg); toast.error(msg); return;
+    }
     toast.success("Account created. Signing you in…");
     navigate({ to: "/app/dashboard" });
   };

@@ -20,12 +20,20 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
-    if (!emailValid) { setErr("Email must be a valid @ibitpu.edu.pk address."); return; }
+    if (!emailValid) {
+      const m = "Email must be a valid @ibitpu.edu.pk address.";
+      setErr(m); toast.error(m); return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) { setErr(error.message); return; }
-    toast.success("Signed in");
+    if (error) {
+      const msg = /invalid login credentials/i.test(error.message)
+        ? "Incorrect email or password. If you haven't registered, create an account first."
+        : error.message;
+      setErr(msg); toast.error(msg); return;
+    }
+    toast.success("Signed in successfully");
     navigate({ to: "/app/dashboard" });
   };
 

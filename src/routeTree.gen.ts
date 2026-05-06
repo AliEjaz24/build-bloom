@@ -14,8 +14,13 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppTimetableRouteImport } from './routes/app.timetable'
+import { Route as AppTermTimetableRouteImport } from './routes/app.term-timetable'
 import { Route as AppRegistrationRouteImport } from './routes/app.registration'
+import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppMakeupRouteImport } from './routes/app.makeup'
+import { Route as AppDataRouteImport } from './routes/app.data'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppCancelRouteImport } from './routes/app.cancel'
 import { Route as AppAvailabilityRouteImport } from './routes/app.availability'
 
 const SignupRoute = SignupRouteImport.update({
@@ -43,14 +48,39 @@ const AppTimetableRoute = AppTimetableRouteImport.update({
   path: '/timetable',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTermTimetableRoute = AppTermTimetableRouteImport.update({
+  id: '/term-timetable',
+  path: '/term-timetable',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppRegistrationRoute = AppRegistrationRouteImport.update({
   id: '/registration',
   path: '/registration',
   getParentRoute: () => AppRoute,
 } as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMakeupRoute = AppMakeupRouteImport.update({
+  id: '/makeup',
+  path: '/makeup',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDataRoute = AppDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCancelRoute = AppCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAvailabilityRoute = AppAvailabilityRouteImport.update({
@@ -65,8 +95,13 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/app/availability': typeof AppAvailabilityRoute
+  '/app/cancel': typeof AppCancelRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/data': typeof AppDataRoute
+  '/app/makeup': typeof AppMakeupRoute
+  '/app/notifications': typeof AppNotificationsRoute
   '/app/registration': typeof AppRegistrationRoute
+  '/app/term-timetable': typeof AppTermTimetableRoute
   '/app/timetable': typeof AppTimetableRoute
 }
 export interface FileRoutesByTo {
@@ -75,8 +110,13 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/app/availability': typeof AppAvailabilityRoute
+  '/app/cancel': typeof AppCancelRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/data': typeof AppDataRoute
+  '/app/makeup': typeof AppMakeupRoute
+  '/app/notifications': typeof AppNotificationsRoute
   '/app/registration': typeof AppRegistrationRoute
+  '/app/term-timetable': typeof AppTermTimetableRoute
   '/app/timetable': typeof AppTimetableRoute
 }
 export interface FileRoutesById {
@@ -86,8 +126,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/app/availability': typeof AppAvailabilityRoute
+  '/app/cancel': typeof AppCancelRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/data': typeof AppDataRoute
+  '/app/makeup': typeof AppMakeupRoute
+  '/app/notifications': typeof AppNotificationsRoute
   '/app/registration': typeof AppRegistrationRoute
+  '/app/term-timetable': typeof AppTermTimetableRoute
   '/app/timetable': typeof AppTimetableRoute
 }
 export interface FileRouteTypes {
@@ -98,8 +143,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/app/availability'
+    | '/app/cancel'
     | '/app/dashboard'
+    | '/app/data'
+    | '/app/makeup'
+    | '/app/notifications'
     | '/app/registration'
+    | '/app/term-timetable'
     | '/app/timetable'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,8 +158,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/app/availability'
+    | '/app/cancel'
     | '/app/dashboard'
+    | '/app/data'
+    | '/app/makeup'
+    | '/app/notifications'
     | '/app/registration'
+    | '/app/term-timetable'
     | '/app/timetable'
   id:
     | '__root__'
@@ -118,8 +173,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/app/availability'
+    | '/app/cancel'
     | '/app/dashboard'
+    | '/app/data'
+    | '/app/makeup'
+    | '/app/notifications'
     | '/app/registration'
+    | '/app/term-timetable'
     | '/app/timetable'
   fileRoutesById: FileRoutesById
 }
@@ -167,6 +227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTimetableRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/term-timetable': {
+      id: '/app/term-timetable'
+      path: '/term-timetable'
+      fullPath: '/app/term-timetable'
+      preLoaderRoute: typeof AppTermTimetableRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/registration': {
       id: '/app/registration'
       path: '/registration'
@@ -174,11 +241,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRegistrationRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/notifications': {
+      id: '/app/notifications'
+      path: '/notifications'
+      fullPath: '/app/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/makeup': {
+      id: '/app/makeup'
+      path: '/makeup'
+      fullPath: '/app/makeup'
+      preLoaderRoute: typeof AppMakeupRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/data': {
+      id: '/app/data'
+      path: '/data'
+      fullPath: '/app/data'
+      preLoaderRoute: typeof AppDataRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/dashboard': {
       id: '/app/dashboard'
       path: '/dashboard'
       fullPath: '/app/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/cancel': {
+      id: '/app/cancel'
+      path: '/cancel'
+      fullPath: '/app/cancel'
+      preLoaderRoute: typeof AppCancelRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/availability': {
@@ -193,15 +288,25 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAvailabilityRoute: typeof AppAvailabilityRoute
+  AppCancelRoute: typeof AppCancelRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDataRoute: typeof AppDataRoute
+  AppMakeupRoute: typeof AppMakeupRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
   AppRegistrationRoute: typeof AppRegistrationRoute
+  AppTermTimetableRoute: typeof AppTermTimetableRoute
   AppTimetableRoute: typeof AppTimetableRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAvailabilityRoute: AppAvailabilityRoute,
+  AppCancelRoute: AppCancelRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppDataRoute: AppDataRoute,
+  AppMakeupRoute: AppMakeupRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
   AppRegistrationRoute: AppRegistrationRoute,
+  AppTermTimetableRoute: AppTermTimetableRoute,
   AppTimetableRoute: AppTimetableRoute,
 }
 

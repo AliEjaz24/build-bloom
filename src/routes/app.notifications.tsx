@@ -26,7 +26,7 @@ function NotifPage() {
   };
   const broadcast = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error } = await supabase.from("notifications").insert({ title: form.title, message: form.message, audience: form.audience });
+    const { error } = await supabase.from("notifications").insert({ title: form.title, message: form.message, audience: form.audience as "admin" | "student" | "teacher" });
     if (error) toast.error(error.message); else { toast.success("Sent"); setForm({ title: "", message: "", audience: "student" }); load(); }
   };
 

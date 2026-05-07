@@ -426,3 +426,7 @@
   .sidebar.mobile-open { transform: none; }
   .sidebar-toggle { display: none; }
 }
+
+@media (max-width: 800px) {
+  .dash-cols { grid-template-columns: 1fr !important; }
+}

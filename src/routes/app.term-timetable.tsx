@@ -116,7 +116,7 @@ function TermPage() {
                     {s ? (
                       <div className={`sg-class ${s.color ?? ""}`}>
                         <div className="sg-class-name">{s.courses?.code ?? "—"}</div>
-                        <div className="sg-class-room">{s.rooms?.code ?? ""}{s.profiles?.full_name ? ` · ${s.profiles.full_name.split(" ")[0]}` : ""}</div>
+                        <div className="sg-class-room">{s.rooms?.code ?? ""}{s.profiles?.full_name ? ` · ${s.profiles.full_name}` : ""}</div>
                       </div>
                     ) : <div className="add-class-btn">+</div>}
                   </div>

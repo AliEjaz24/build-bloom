@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppTimetableRouteImport } from './routes/app.timetable'
 import { Route as AppTermTimetableRouteImport } from './routes/app.term-timetable'
+import { Route as AppTermPlannerRouteImport } from './routes/app.term-planner'
 import { Route as AppRegistrationRouteImport } from './routes/app.registration'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppMakeupRouteImport } from './routes/app.makeup'
@@ -51,6 +52,11 @@ const AppTimetableRoute = AppTimetableRouteImport.update({
 const AppTermTimetableRoute = AppTermTimetableRouteImport.update({
   id: '/term-timetable',
   path: '/term-timetable',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTermPlannerRoute = AppTermPlannerRouteImport.update({
+  id: '/term-planner',
+  path: '/term-planner',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRegistrationRoute = AppRegistrationRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/app/makeup': typeof AppMakeupRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/registration': typeof AppRegistrationRoute
+  '/app/term-planner': typeof AppTermPlannerRoute
   '/app/term-timetable': typeof AppTermTimetableRoute
   '/app/timetable': typeof AppTimetableRoute
 }
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/app/makeup': typeof AppMakeupRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/registration': typeof AppRegistrationRoute
+  '/app/term-planner': typeof AppTermPlannerRoute
   '/app/term-timetable': typeof AppTermTimetableRoute
   '/app/timetable': typeof AppTimetableRoute
 }
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/app/makeup': typeof AppMakeupRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/registration': typeof AppRegistrationRoute
+  '/app/term-planner': typeof AppTermPlannerRoute
   '/app/term-timetable': typeof AppTermTimetableRoute
   '/app/timetable': typeof AppTimetableRoute
 }
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/app/makeup'
     | '/app/notifications'
     | '/app/registration'
+    | '/app/term-planner'
     | '/app/term-timetable'
     | '/app/timetable'
   fileRoutesByTo: FileRoutesByTo
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/app/makeup'
     | '/app/notifications'
     | '/app/registration'
+    | '/app/term-planner'
     | '/app/term-timetable'
     | '/app/timetable'
   id:
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/app/makeup'
     | '/app/notifications'
     | '/app/registration'
+    | '/app/term-planner'
     | '/app/term-timetable'
     | '/app/timetable'
   fileRoutesById: FileRoutesById
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       path: '/term-timetable'
       fullPath: '/app/term-timetable'
       preLoaderRoute: typeof AppTermTimetableRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/term-planner': {
+      id: '/app/term-planner'
+      path: '/term-planner'
+      fullPath: '/app/term-planner'
+      preLoaderRoute: typeof AppTermPlannerRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/registration': {
@@ -294,6 +313,7 @@ interface AppRouteChildren {
   AppMakeupRoute: typeof AppMakeupRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppRegistrationRoute: typeof AppRegistrationRoute
+  AppTermPlannerRoute: typeof AppTermPlannerRoute
   AppTermTimetableRoute: typeof AppTermTimetableRoute
   AppTimetableRoute: typeof AppTimetableRoute
 }
@@ -306,6 +326,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMakeupRoute: AppMakeupRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppRegistrationRoute: AppRegistrationRoute,
+  AppTermPlannerRoute: AppTermPlannerRoute,
   AppTermTimetableRoute: AppTermTimetableRoute,
   AppTimetableRoute: AppTimetableRoute,
 }

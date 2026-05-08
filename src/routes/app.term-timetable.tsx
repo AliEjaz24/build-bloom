@@ -56,6 +56,16 @@ function TermPage() {
   };
   const save = async () => {
     if (!editing) return;
+    if (form.room_id) {
+      const conflict = slots.find(s => s.day === editing.day && s.slot_index === editing.slot_index && s.room_id === form.room_id && s.id !== editing.existing?.id);
+      if (conflict) { toast.error(`Room already booked at this time (${conflict.courses?.code ?? "another class"})`); return; }
+    }
+    if (form.teacher_id) {
+      const { data: tConf } = await supabase.from("timetable_slots").select("id, courses(code)")
+        .eq("day", editing.day).eq("slot_index", editing.slot_index).eq("teacher_id", form.teacher_id);
+      const other = (tConf ?? []).find(x => x.id !== editing.existing?.id);
+      if (other) { toast.error(`Teacher already booked at this time`); return; }
+    }
     const payload = {
       program, batch, section,
       day: editing.day, slot_index: editing.slot_index,
@@ -65,7 +75,10 @@ function TermPage() {
     const { error } = editing.existing
       ? await supabase.from("timetable_slots").update(payload).eq("id", editing.existing.id)
       : await supabase.from("timetable_slots").insert(payload);
-    if (error) toast.error(error.message); else { toast.success("Saved"); setEditing(null); load(); }
+    if (error) {
+      const msg = error.code === "23505" ? "Conflict: room or teacher already booked at this time." : error.message;
+      toast.error(msg);
+    } else { toast.success("Saved"); setEditing(null); load(); }
   };
   const remove = async () => {
     if (editing?.existing) {

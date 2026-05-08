@@ -18,6 +18,7 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
     { section: "Main", items: [
       { to: "/app/dashboard", label: "Dashboard", icon: "🏠" },
       { to: "/app/timetable", label: "My Timetable", icon: "📅" },
+      { to: "/app/term-planner", label: "Term Timetable", icon: "📊" },
       { to: "/app/registration", label: "Course Registration", icon: "📝" },
     ]},
     { section: "Account", items: [
@@ -28,6 +29,7 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
     { section: "Main", items: [
       { to: "/app/dashboard", label: "Dashboard", icon: "🏠" },
       { to: "/app/timetable", label: "My Schedule", icon: "📅" },
+      { to: "/app/term-planner", label: "Term Timetable", icon: "📊" },
       { to: "/app/availability", label: "Availability", icon: "🕐" },
     ]},
     { section: "Requests", items: [
@@ -41,7 +43,8 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
   admin: [
     { section: "Main", items: [
       { to: "/app/dashboard", label: "Dashboard", icon: "🏠" },
-      { to: "/app/term-timetable", label: "Term Timetable", icon: "📊" },
+      { to: "/app/term-timetable", label: "Section Timetable", icon: "📊" },
+      { to: "/app/term-planner", label: "Term Timetable", icon: "📅" },
     ]},
     { section: "Data", items: [
       { to: "/app/data", label: "Courses & Faculty", icon: "🗄" },

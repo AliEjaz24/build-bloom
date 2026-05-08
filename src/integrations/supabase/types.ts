@@ -331,6 +331,188 @@ export type Database = {
         }
         Relationships: []
       }
+      term_courses: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          room_id: string | null
+          section: string | null
+          teacher_id: string | null
+          term_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          room_id?: string | null
+          section?: string | null
+          teacher_id?: string | null
+          term_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          room_id?: string | null
+          section?: string | null
+          teacher_id?: string | null
+          term_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "term_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "term_courses_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "term_courses_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "term_courses_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      term_datesheet: {
+        Row: {
+          course_id: string | null
+          created_at: string
+          exam_date: string | null
+          id: string
+          kind: string
+          room_id: string | null
+          slot_index: number | null
+          term_id: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string
+          exam_date?: string | null
+          id?: string
+          kind: string
+          room_id?: string | null
+          slot_index?: number | null
+          term_id: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string
+          exam_date?: string | null
+          id?: string
+          kind?: string
+          room_id?: string | null
+          slot_index?: number | null
+          term_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "term_datesheet_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "term_datesheet_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "term_datesheet_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      term_week_plan: {
+        Row: {
+          color: string | null
+          created_at: string
+          day: number
+          id: string
+          label: string
+          term_id: string
+          week: number
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          day: number
+          id?: string
+          label?: string
+          term_id: string
+          week: number
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          day?: number
+          id?: string
+          label?: string
+          term_id?: string
+          week?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "term_week_plan_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terms: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          end_date: string | null
+          id: string
+          label: string
+          start_date: string | null
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          label: string
+          start_date?: string | null
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          label?: string
+          start_date?: string | null
+        }
+        Relationships: []
+      }
       timetable_slots: {
         Row: {
           batch: number

@@ -29,6 +29,7 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
     { section: "Main", items: [
       { to: "/app/dashboard", label: "Dashboard", icon: "🏠" },
       { to: "/app/timetable", label: "My Schedule", icon: "📅" },
+      { to: "/app/term-planner", label: "Term Timetable", icon: "📊" },
       { to: "/app/availability", label: "Availability", icon: "🕐" },
     ]},
     { section: "Requests", items: [

@@ -21,6 +21,7 @@ function DataPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [c, setC] = useState({ code: "", title: "", credit_hours: 3, program: "BBIT", semester: 1 });
   const [r, setR] = useState({ code: "", type: "Classroom", capacity: 40, location: "" });
+  const [t, setT] = useState({ email: "", full_name: "", department: "", designation: "", password: "" });
 
   const load = async () => {
     const [{ data: cs }, { data: rs }, { data: ts }] = await Promise.all([

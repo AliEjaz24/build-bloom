@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const TeacherInput = z.object({
+  access_token: z.string().min(1),
   email: z.string().email(),
   full_name: z.string().min(1),
   department: z.string().optional().default(""),
@@ -12,12 +12,16 @@ const TeacherInput = z.object({
 });
 
 export const createTeacher = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => TeacherInput.parse(data))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     try {
-      const { supabase, userId } = context;
-      const { data: isAdmin, error: roleErr } = await supabase.rpc("has_role", {
+      const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(data.access_token);
+      if (userErr || !userData?.user) {
+        return { ok: false as const, error: "Not authenticated" };
+      }
+      const userId = userData.user.id;
+
+      const { data: isAdmin, error: roleErr } = await supabaseAdmin.rpc("has_role", {
         _user_id: userId,
         _role: "admin",
       });

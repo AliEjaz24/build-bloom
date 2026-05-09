@@ -53,7 +53,13 @@ function DataPage() {
   const addTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await createTeacher({ data: t });
+      const { data: sess } = await supabase.auth.getSession();
+      const access_token = sess.session?.access_token;
+      if (!access_token) {
+        toast.error("Please sign in again");
+        return;
+      }
+      const res = await createTeacher({ data: { ...t, access_token } });
       if (!res?.ok) {
         toast.error(res?.error ?? "Failed to add teacher");
         return;

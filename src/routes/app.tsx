@@ -60,13 +60,30 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
 };
 
 function AppLayout() {
-  const { profile, role, loading, signOut } = useAuth();
+  const { profile, role, loading, signOut, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    if (!user || !role) return;
+    const loadUnread = async () => {
+      const { count } = await supabase.from("notifications")
+        .select("id", { count: "exact", head: true })
+        .or(`recipient_id.eq.${user.id},audience.eq.${role}`)
+        .eq("read", false);
+      setUnread(count ?? 0);
+    };
+    loadUnread();
+    const ch = supabase.channel("notif-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, loadUnread)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user?.id, role]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
   if (!role) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">No role assigned. Contact admin.</div>;

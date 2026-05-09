@@ -53,7 +53,11 @@ function DataPage() {
   const addTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createTeacher({ data: t });
+      const res = await createTeacher({ data: t });
+      if (!res?.ok) {
+        toast.error(res?.error ?? "Failed to add teacher");
+        return;
+      }
       toast.success("Teacher added");
       setT({ email: "", full_name: "", department: "", designation: "", password: "" });
       load();

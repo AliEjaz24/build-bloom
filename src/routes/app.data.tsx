@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
+import { createTeacher } from "@/lib/teachers.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/data")({ component: DataPage });
@@ -20,6 +21,7 @@ function DataPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [c, setC] = useState({ code: "", title: "", credit_hours: 3, program: "BBIT", semester: 1 });
   const [r, setR] = useState({ code: "", type: "Classroom", capacity: 40, location: "" });
+  const [t, setT] = useState({ email: "", full_name: "", department: "", designation: "", password: "" });
 
   const load = async () => {
     const [{ data: cs }, { data: rs }, { data: ts }] = await Promise.all([
@@ -48,6 +50,17 @@ function DataPage() {
     if (error) toast.error(error.message); else { toast.success("Room added"); setR({ code: "", type: "Classroom", capacity: 40, location: "" }); load(); }
   };
   const delRoom = async (id: string) => { await supabase.from("rooms").delete().eq("id", id); load(); };
+  const addTeacher = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await createTeacher({ data: t });
+      toast.success("Teacher added");
+      setT({ email: "", full_name: "", department: "", designation: "", password: "" });
+      load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add teacher");
+    }
+  };
 
   return (
     <>
@@ -113,14 +126,31 @@ function DataPage() {
       )}
 
       {tab === "teachers" && (
-        <div className="card"><div className="card-title">👨‍🏫 Faculty</div>
-          <div className="table-scroll"><table className="data-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead>
-            <tbody>{teachers.map(t => (
-              <tr key={t.id}><td>{t.full_name}</td><td>{t.email}</td><td>{t.department ?? "—"}</td><td>{t.designation ?? "—"}</td></tr>
-            ))}</tbody>
-          </table></div>
-        </div>
+        <>
+          <div className="card" style={{ marginBottom: 18 }}>
+            <div className="card-title">➕ Add Teacher</div>
+            <form onSubmit={addTeacher}>
+              <div className="form-row">
+                <div className="form-col"><label>Full Name</label><input className="form-input" value={t.full_name} onChange={e => setT({ ...t, full_name: e.target.value })} required /></div>
+                <div className="form-col"><label>Email</label><input type="email" className="form-input" value={t.email} onChange={e => setT({ ...t, email: e.target.value })} required /></div>
+                <div className="form-col"><label>Temp Password</label><input type="text" className="form-input" value={t.password} onChange={e => setT({ ...t, password: e.target.value })} minLength={6} required /></div>
+              </div>
+              <div className="form-row">
+                <div className="form-col"><label>Department</label><input className="form-input" value={t.department} onChange={e => setT({ ...t, department: e.target.value })} /></div>
+                <div className="form-col"><label>Designation</label><input className="form-input" value={t.designation} onChange={e => setT({ ...t, designation: e.target.value })} /></div>
+              </div>
+              <button className="btn btn-accent">Add Teacher</button>
+            </form>
+          </div>
+          <div className="card"><div className="card-title">👨‍🏫 Faculty</div>
+            <div className="table-scroll"><table className="data-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead>
+              <tbody>{teachers.map(x => (
+                <tr key={x.id}><td>{x.full_name}</td><td>{x.email}</td><td>{x.department ?? "—"}</td><td>{x.designation ?? "—"}</td></tr>
+              ))}</tbody>
+            </table></div>
+          </div>
+        </>
       )}
     </>
   );

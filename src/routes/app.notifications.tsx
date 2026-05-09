@@ -24,6 +24,14 @@ function NotifPage() {
     await supabase.from("notifications").update({ read: true }).eq("id", id);
     load();
   };
+  const markAllRead = async () => {
+    if (!profile || !role) return;
+    await supabase.from("notifications").update({ read: true })
+      .or(`recipient_id.eq.${profile.id},audience.eq.${role}`)
+      .eq("read", false);
+    toast.success("All marked as read");
+    load();
+  };
   const broadcast = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase.from("notifications").insert({ title: form.title, message: form.message, audience: form.audience as "admin" | "student" | "teacher" });
@@ -56,7 +64,12 @@ function NotifPage() {
         </div>
       )}
       <div className="card" style={{ padding: 0 }}>
-        <div className="card-title" style={{ padding: "20px 20px 0" }}>🔔 Notifications</div>
+        <div className="card-title" style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>🔔 Notifications</span>
+          {items.some(n => !n.read) && (
+            <button className="btn btn-sm" onClick={markAllRead} style={{ fontSize: 12 }}>Mark all read</button>
+          )}
+        </div>
         {items.length === 0 && <div style={{ padding: 20, fontSize: 13, color: "var(--text-muted)" }}>No notifications.</div>}
         {items.map(n => (
           <div key={n.id} className={`notif-item ${n.read ? "" : "notif-unread"}`} onClick={() => markRead(n.id)} style={{ cursor: "pointer" }}>

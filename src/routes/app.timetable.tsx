@@ -38,7 +38,7 @@ function TimetablePage() {
 
   return (
     <>
-      {role !== "teacher" && (
+      {role === "admin" && (
         <div className="timetable-controls">
           <select className="select-input" value={program} onChange={e => setProgram(e.target.value)}>
             {PROGRAMS.map(p => <option key={p.value} value={p.value}>{p.value}</option>)}

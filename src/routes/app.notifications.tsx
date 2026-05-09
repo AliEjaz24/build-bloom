@@ -24,6 +24,14 @@ function NotifPage() {
     await supabase.from("notifications").update({ read: true }).eq("id", id);
     load();
   };
+  const markAllRead = async () => {
+    if (!profile || !role) return;
+    await supabase.from("notifications").update({ read: true })
+      .or(`recipient_id.eq.${profile.id},audience.eq.${role}`)
+      .eq("read", false);
+    toast.success("All marked as read");
+    load();
+  };
   const broadcast = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase.from("notifications").insert({ title: form.title, message: form.message, audience: form.audience as "admin" | "student" | "teacher" });

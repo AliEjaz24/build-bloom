@@ -5,11 +5,8 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
-type Role = "student" | "teacher" | "admin";
-
 function LoginPage() {
   const navigate = useNavigate();
-  const [role, setRole] = useState<Role>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,13 +50,6 @@ function LoginPage() {
           <div className="login-heading">Department Portal</div>
           <div className="login-sub">Sign in with your university credentials</div>
 
-          <div className="role-tabs">
-            {(["student", "teacher", "admin"] as Role[]).map((r) => (
-              <button type="button" key={r} className={`role-tab ${role === r ? "active" : ""}`} onClick={() => setRole(r)}>
-                {r[0].toUpperCase() + r.slice(1)}
-              </button>
-            ))}
-          </div>
 
           <div className="form-group">
             <label>University Email</label>
@@ -83,7 +73,7 @@ function LoginPage() {
 
           <div className="login-link">
             New to the portal?{" "}
-            <Link to="/signup" search={{ role }}>Create an account</Link>
+            <Link to="/signup" search={{ role: "student" }}>Create an account</Link>
           </div>
         </form>
       </div>

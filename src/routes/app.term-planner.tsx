@@ -34,19 +34,23 @@ const LABEL_PRESETS = [
 type Tab = "courses" | "midterm" | "final" | "weeks";
 
 function TermPlanner() {
-  const { role } = useAuth();
+  const { role, profile } = useAuth();
   const [terms, setTerms] = useState<Term[]>([]);
   const [termId, setTermId] = useState<string>("");
   const [tab, setTab] = useState<Tab>("courses");
 
   useEffect(() => {
     supabase.from("terms").select("id,code,label").order("code").then(({ data }) => {
-      const t = (data as Term[]) ?? [];
+      let t = (data as Term[]) ?? [];
+      if (role === "student" && profile?.batch) {
+        const prefix = `F${String(profile.batch).slice(-2)}-`;
+        t = t.filter(x => x.code.startsWith(prefix));
+      }
       setTerms(t);
       if (t.length && !termId) setTermId(t[0].id);
     });
     // eslint-disable-next-line
-  }, []);
+  }, [role, profile?.batch]);
 
   return (
     <>

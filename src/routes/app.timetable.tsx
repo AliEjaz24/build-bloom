@@ -17,8 +17,19 @@ function TimetablePage() {
   const load = async () => {
     let q = supabase.from("timetable_slots")
       .select("*, courses(code,title,credit_hours), rooms(code), profiles(full_name)");
-    if (role === "teacher" && profile) q = q.eq("teacher_id", profile.id);
-    else q = q.eq("program", program).eq("batch", batch).eq("section", section);
+    if (role === "teacher" && profile) {
+      q = q.eq("teacher_id", profile.id);
+    } else if (role === "student" && profile) {
+      const { data: regs } = await supabase.from("registrations").select("course_id").eq("student_id", profile.id);
+      const ids = (regs ?? []).map((r: { course_id: string }) => r.course_id);
+      if (ids.length === 0) { setSlots([]); return; }
+      q = q.eq("program", profile.program ?? program)
+           .eq("batch", profile.batch ?? batch)
+           .eq("section", profile.section ?? section)
+           .in("course_id", ids);
+    } else {
+      q = q.eq("program", program).eq("batch", batch).eq("section", section);
+    }
     const { data } = await q;
     setSlots(data ?? []);
   };

@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
@@ -24,15 +25,18 @@ function LoginPage() {
       const m = "Email must be a valid @ibitpu.edu.pk address.";
       setErr(m); toast.error(m); return;
     }
+    logger.info("Login attempt", { email });
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
+      logger.error("Login failed", { email, error: error.message });
       const msg = /invalid login credentials/i.test(error.message)
         ? "Incorrect email or password. If you haven't registered, create an account first."
         : error.message;
       setErr(msg); toast.error(msg); return;
     }
+    logger.info("Login successful", { email });
     toast.success("Signed in successfully");
     navigate({ to: "/app/dashboard" });
   };
@@ -53,13 +57,7 @@ function LoginPage() {
           <div className="login-heading">Department Portal</div>
           <div className="login-sub">Sign in with your university credentials</div>
 
-          <div className="role-tabs">
-            {(["student", "teacher", "admin"] as Role[]).map((r) => (
-              <button type="button" key={r} className={`role-tab ${role === r ? "active" : ""}`} onClick={() => setRole(r)}>
-                {r[0].toUpperCase() + r.slice(1)}
-              </button>
-            ))}
-          </div>
+
 
           <div className="form-group">
             <label>University Email</label>

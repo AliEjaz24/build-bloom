@@ -14,10 +14,17 @@ function NotifPage() {
   const [form, setForm] = useState({ title: "", message: "", audience: "student" });
 
   const load = async () => {
-    const { data } = await supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100);
+    if (!profile) return;
+    let q = supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100);
+    if (role) {
+      q = q.or(`recipient_id.eq.${profile.id},audience.eq.${role},recipient_id.is.null`);
+    } else {
+      q = q.or(`recipient_id.eq.${profile.id},recipient_id.is.null`);
+    }
+    const { data } = await q;
     setItems((data as N[]) ?? []);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [profile?.id, role]);
 
   const markRead = async (id: string) => {
     if (!profile) return;

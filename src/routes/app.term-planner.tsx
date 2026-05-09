@@ -34,19 +34,23 @@ const LABEL_PRESETS = [
 type Tab = "courses" | "midterm" | "final" | "weeks";
 
 function TermPlanner() {
-  const { role } = useAuth();
+  const { role, profile } = useAuth();
   const [terms, setTerms] = useState<Term[]>([]);
   const [termId, setTermId] = useState<string>("");
   const [tab, setTab] = useState<Tab>("courses");
 
   useEffect(() => {
     supabase.from("terms").select("id,code,label").order("code").then(({ data }) => {
-      const t = (data as Term[]) ?? [];
+      let t = (data as Term[]) ?? [];
+      if (role === "student" && profile?.batch) {
+        const batchStr = profile.batch.toString().slice(-2);
+        t = t.filter(x => x.label.includes(batchStr) || x.code.includes(batchStr));
+      }
       setTerms(t);
-      if (t.length && !termId) setTermId(t[0].id);
+      if (t.length && (!termId || !t.find(x => x.id === termId))) setTermId(t[0].id);
     });
     // eslint-disable-next-line
-  }, []);
+  }, [role, profile?.batch, termId]);
 
   return (
     <>
@@ -103,20 +107,30 @@ function CoursesTab({ termId, isAdmin }: { termId: string; isAdmin: boolean }) {
       .select("*, courses(code,title,credit_hours), profiles(full_name), rooms(code)")
       .eq("term_id", termId);
     setRows((data as TermCourse[]) ?? []);
-    const [{ data: c }, { data: r }, { data: t }] = await Promise.all([
+    const [{ data: c }, { data: r }, { data: roleData }] = await Promise.all([
       supabase.from("courses").select("id,code,title,credit_hours").order("code"),
       supabase.from("rooms").select("id,code").order("code"),
-      supabase.from("user_roles").select("profiles!inner(id,full_name)").eq("role", "teacher"),
+      supabase.from("user_roles").select("user_id").eq("role", "teacher"),
     ]);
     setCourses((c as Course[]) ?? []);
     setRooms((r as Room[]) ?? []);
-    type TR = { profiles: Teacher };
-    setTeachers(((t as unknown as TR[]) ?? []).map(x => x.profiles));
+    
+    const tIds = (roleData || []).map(x => x.user_id);
+    if (tIds.length > 0) {
+      const { data: ts } = await supabase.from("profiles").select("id,full_name").in("id", tIds);
+      setTeachers((ts as Teacher[]) ?? []);
+    } else {
+      setTeachers([]);
+    }
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [termId]);
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (rows.some(r => r.course_id === form.course_id && r.section === form.section)) {
+      toast.error("This course is already offered for this section.");
+      return;
+    }
     const { error } = await supabase.from("term_courses").insert({
       term_id: termId, course_id: form.course_id,
       teacher_id: form.teacher_id || null, room_id: form.room_id || null, section: form.section,
@@ -202,11 +216,19 @@ function DatesheetTab({ termId, kind, isAdmin }: { termId: string; kind: "midter
       .select("*, courses(code,title), rooms(code)")
       .eq("term_id", termId).eq("kind", kind).order("exam_date");
     setRows((data as DateRow[]) ?? []);
-    const [{ data: c }, { data: r }] = await Promise.all([
-      supabase.from("courses").select("id,code,title,credit_hours").order("code"),
+    const [{ data: tc }, { data: r }] = await Promise.all([
+      supabase.from("term_courses").select("course_id, courses(id,code,title,credit_hours)").eq("term_id", termId),
       supabase.from("rooms").select("id,code").order("code"),
     ]);
-    setCourses((c as Course[]) ?? []);
+    
+    const uniqueCoursesMap = new Map();
+    (tc || []).forEach((x: any) => {
+      if (x.courses && !uniqueCoursesMap.has(x.courses.id)) {
+        uniqueCoursesMap.set(x.courses.id, x.courses);
+      }
+    });
+    
+    setCourses(Array.from(uniqueCoursesMap.values()) as Course[]);
     setRooms((r as Room[]) ?? []);
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [termId, kind]);

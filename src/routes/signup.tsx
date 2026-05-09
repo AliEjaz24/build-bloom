@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PROGRAMS, BATCHES, SECTIONS } from "@/lib/constants";
+import { logger } from "@/lib/logger";
 
 type Role = "student" | "teacher" | "admin";
 
@@ -37,12 +38,14 @@ function SignupPage() {
     const meta: Record<string, string> = { full_name: fullName, role };
     if (role === "student") { meta.program = program; meta.batch = String(batch); meta.section = section; }
     if (role === "teacher" || role === "admin") { meta.department = department; meta.designation = designation; }
+    logger.info("Signup attempt", { email, role });
     const { error } = await supabase.auth.signUp({
       email, password,
       options: { emailRedirectTo: `${window.location.origin}/app/dashboard`, data: meta },
     });
     setLoading(false);
     if (error) {
+      logger.error("Signup failed", { email, error: error.message });
       const msg = /weak.*password|pwned/i.test(error.message)
         ? "This password has appeared in known data breaches. Please choose a stronger, unique password."
         : /already.*registered|user.*exists/i.test(error.message)
@@ -50,6 +53,7 @@ function SignupPage() {
         : error.message;
       setErr(msg); toast.error(msg); return;
     }
+    logger.info("Signup successful", { email, role });
     toast.success("Account created. Signing you in…");
     navigate({ to: "/app/dashboard" });
   };

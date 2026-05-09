@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, Link, useLocation, useNavigate, redirect } fro
 import { useEffect, useState } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
+import { logger } from "@/lib/logger";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
@@ -65,8 +66,37 @@ function AppLayout() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+  useEffect(() => { 
+    setMobileOpen(false); 
+    logger.info("Page navigated", { pathname: location.pathname });
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!profile) return;
+    const fetchUnread = async () => {
+      if (!profile) return;
+      let q = supabase.from("notifications")
+        .select("id")
+        .eq("read", false);
+      
+      if (role) {
+        q = q.or(`recipient_id.eq.${profile.id},audience.eq.${role},recipient_id.is.null`);
+      } else {
+        q = q.or(`recipient_id.eq.${profile.id},recipient_id.is.null`);
+      }
+      
+      const { data } = await q;
+      setUnreadCount(data?.length || 0);
+    };
+    fetchUnread();
+    
+    const sub = supabase.channel("notif_changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, fetchUnread)
+      .subscribe();
+    return () => { supabase.removeChannel(sub); };
+  }, [profile]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
   if (!role) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">No role assigned. Contact admin.</div>;
@@ -102,7 +132,14 @@ function AppLayout() {
               {sec.items.map((it) => (
                 <Link key={it.to} to={it.to} className={`nav-item ${location.pathname.startsWith(it.to) ? "active" : ""}`}>
                   <span className="nav-icon">{it.icon}</span>
-                  <span className="nav-label">{it.label}</span>
+                  <span className="nav-label" style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between" }}>
+                    {it.label}
+                    {it.label === "Notifications" && unreadCount > 0 && (
+                      <span style={{ background: "#ef4444", color: "white", padding: "1px 7px", borderRadius: "10px", fontSize: "0.75rem", fontWeight: "bold", marginLeft: "8px" }}>
+                        {unreadCount}
+                      </span>
+                    )}
+                  </span>
                 </Link>
               ))}
             </div>

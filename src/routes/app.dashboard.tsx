@@ -31,10 +31,14 @@ function Dashboard() {
   useEffect(() => {
     if (!role || !profile) return;
     (async () => {
-      // notifications for everyone
-      const { data: n } = await supabase
-        .from("notifications").select("id,title,message,created_at,read")
-        .order("created_at", { ascending: false }).limit(5);
+      // notifications for everyone and specific user
+      let nQ = supabase.from("notifications").select("id,title,message,created_at,read");
+      if (role) {
+        nQ = nQ.or(`recipient_id.eq.${profile.id},audience.eq.${role},recipient_id.is.null`);
+      } else {
+        nQ = nQ.or(`recipient_id.eq.${profile.id},recipient_id.is.null`);
+      }
+      const { data: n } = await nQ.order("created_at", { ascending: false }).limit(5);
       setNotifs((n as Notif[]) ?? []);
 
       if (role === "student" && profile.program && profile.batch && profile.section) {

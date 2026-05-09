@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger";
 
 export type AppRole = "admin" | "teacher" | "student";
 
@@ -35,16 +36,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadAux = async (uid: string) => {
+    logger.debug("Loading user profile and role", { uid });
     const [{ data: p }, { data: r }] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid).maybeSingle(),
     ]);
     setProfile((p as Profile) ?? null);
     setRole(((r as { role: AppRole } | null)?.role) ?? null);
+    logger.info("User context loaded", { uid, role: r?.role, name: p?.full_name });
   };
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      logger.info(`Auth event: ${event}`, { userId: s?.user?.id });
       setSession(s);
       if (s?.user) {
         setLoading(true);
@@ -54,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
     supabase.auth.getSession().then(({ data }) => {
+      logger.debug("Initial session retrieved", { hasSession: !!data.session });
       setSession(data.session);
       if (data.session?.user) loadAux(data.session.user.id).finally(() => setLoading(false));
       else setLoading(false);
@@ -62,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = async () => { if (session?.user) await loadAux(session.user.id); };
-  const signOut = async () => { await supabase.auth.signOut(); };
+  const signOut = async () => { logger.info("User requested sign out"); await supabase.auth.signOut(); };
 
   return (
     <Ctx.Provider value={{ session, user: session?.user ?? null, profile, role, loading, refresh, signOut }}>

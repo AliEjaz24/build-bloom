@@ -41,8 +41,18 @@ function CancelPage() {
     if (error) toast.error(error.message); else { toast.success("Submitted"); load(); }
   };
   const setStatus = async (id: string, status: string) => {
+    const req = reqs.find(r => r.id === id);
     const { error } = await supabase.from("cancel_requests").update({ status }).eq("id", id);
-    if (error) toast.error(error.message); else load();
+    if (error) { toast.error(error.message); return; }
+    if (req?.teacher_id) {
+      const code = req.courses?.code ?? "your class";
+      await supabase.from("notifications").insert({
+        recipient_id: req.teacher_id,
+        title: `Cancellation ${status} — ${code}`,
+        message: `Your cancellation request for ${code} on ${req.cancel_date} was ${status}.`,
+      });
+    }
+    toast.success("Updated"); load();
   };
 
   return (

@@ -17,17 +17,36 @@ function TimetablePage() {
   const load = async () => {
     let q = supabase.from("timetable_slots")
       .select("*, courses(code,title,credit_hours), rooms(code), profiles(full_name)");
-    if (role === "teacher" && profile) q = q.eq("teacher_id", profile.id);
-    else q = q.eq("program", program).eq("batch", batch).eq("section", section);
-    const { data } = await q;
-    setSlots(data ?? []);
+    
+    if (role === "teacher" && profile) {
+      q = q.eq("teacher_id", profile.id);
+      const { data } = await q;
+      setSlots(data ?? []);
+    } else if (role === "student" && profile) {
+      const { data: regs } = await supabase.from("registrations").select("course_id").eq("student_id", profile.id);
+      const courseIds = (regs || []).map((r: any) => r.course_id).filter(Boolean);
+      if (courseIds.length > 0) {
+        q = q.eq("program", profile.program || "BBIT")
+             .eq("batch", profile.batch || 2024)
+             .eq("section", profile.section || "A")
+             .in("course_id", courseIds);
+        const { data } = await q;
+        setSlots(data ?? []);
+      } else {
+        setSlots([]);
+      }
+    } else {
+      q = q.eq("program", program).eq("batch", batch).eq("section", section);
+      const { data } = await q;
+      setSlots(data ?? []);
+    }
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [program, batch, section, role, profile?.id]);
 
   return (
     <>
-      {role !== "teacher" && (
+      {role === "admin" && (
         <div className="timetable-controls">
           <select className="select-input" value={program} onChange={e => setProgram(e.target.value)}>
             {PROGRAMS.map(p => <option key={p.value} value={p.value}>{p.value}</option>)}

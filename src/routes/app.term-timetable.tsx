@@ -30,15 +30,21 @@ function TermPage() {
       .select("*, courses(code), rooms(code), profiles(full_name)")
       .eq("program", program).eq("batch", batch).eq("section", section);
     setSlots((data as Slot[]) ?? []);
-    const [{ data: c }, { data: r }, { data: t }] = await Promise.all([
+    const [{ data: c }, { data: r }, { data: roleData }] = await Promise.all([
       supabase.from("courses").select("id,code,title").order("code"),
       supabase.from("rooms").select("id,code").order("code"),
-      supabase.from("user_roles").select("profiles!inner(id,full_name)").eq("role", "teacher"),
+      supabase.from("user_roles").select("user_id").eq("role", "teacher"),
     ]);
     setCourses(c ?? []);
     setRooms(r ?? []);
-    type TR = { profiles: { id: string; full_name: string } };
-    setTeachers(((t as unknown as TR[]) ?? []).map(x => x.profiles));
+    
+    const tIds = (roleData || []).map(x => x.user_id);
+    if (tIds.length > 0) {
+      const { data: ts } = await supabase.from("profiles").select("id,full_name").in("id", tIds);
+      setTeachers(ts ?? []);
+    } else {
+      setTeachers([]);
+    }
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [program, batch, section]);
 
@@ -65,6 +71,12 @@ function TermPage() {
         .eq("day", editing.day).eq("slot_index", editing.slot_index).eq("teacher_id", form.teacher_id);
       const other = (tConf ?? []).find(x => x.id !== editing.existing?.id);
       if (other) { toast.error(`Teacher already booked at this time`); return; }
+
+      const { data: avail } = await supabase.from("availability")
+        .select("status")
+        .eq("teacher_id", form.teacher_id).eq("day", editing.day).eq("slot_index", editing.slot_index)
+        .maybeSingle();
+      if (avail?.status === "busy") { toast.error(`Teacher not available at this time`); return; }
     }
     const payload = {
       program, batch, section,

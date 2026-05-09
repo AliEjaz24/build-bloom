@@ -73,7 +73,7 @@ function LoginPage() {
 
           <div className="login-link">
             New to the portal?{" "}
-            <Link to="/signup" search={{ role }}>Create an account</Link>
+            <Link to="/signup" search={{ role: "student" }}>Create an account</Link>
           </div>
         </form>
       </div>

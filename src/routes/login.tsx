@@ -5,11 +5,8 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
-type Role = "student" | "teacher" | "admin";
-
 function LoginPage() {
   const navigate = useNavigate();
-  const [role, setRole] = useState<Role>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

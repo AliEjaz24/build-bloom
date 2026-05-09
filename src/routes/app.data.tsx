@@ -50,6 +50,17 @@ function DataPage() {
     if (error) toast.error(error.message); else { toast.success("Room added"); setR({ code: "", type: "Classroom", capacity: 40, location: "" }); load(); }
   };
   const delRoom = async (id: string) => { await supabase.from("rooms").delete().eq("id", id); load(); };
+  const addTeacher = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await createTeacher({ data: t });
+      toast.success("Teacher added");
+      setT({ email: "", full_name: "", department: "", designation: "", password: "" });
+      load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add teacher");
+    }
+  };
 
   return (
     <>

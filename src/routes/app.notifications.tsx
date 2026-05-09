@@ -64,7 +64,12 @@ function NotifPage() {
         </div>
       )}
       <div className="card" style={{ padding: 0 }}>
-        <div className="card-title" style={{ padding: "20px 20px 0" }}>🔔 Notifications</div>
+        <div className="card-title" style={{ padding: "20px 20px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>🔔 Notifications</span>
+          {items.some(n => !n.read) && (
+            <button className="btn btn-sm" onClick={markAllRead} style={{ fontSize: 12 }}>Mark all read</button>
+          )}
+        </div>
         {items.length === 0 && <div style={{ padding: 20, fontSize: 13, color: "var(--text-muted)" }}>No notifications.</div>}
         {items.map(n => (
           <div key={n.id} className={`notif-item ${n.read ? "" : "notif-unread"}`} onClick={() => markRead(n.id)} style={{ cursor: "pointer" }}>

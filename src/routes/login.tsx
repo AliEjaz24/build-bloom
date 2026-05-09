@@ -50,13 +50,6 @@ function LoginPage() {
           <div className="login-heading">Department Portal</div>
           <div className="login-sub">Sign in with your university credentials</div>
 
-          <div className="role-tabs">
-            {(["student", "teacher", "admin"] as Role[]).map((r) => (
-              <button type="button" key={r} className={`role-tab ${role === r ? "active" : ""}`} onClick={() => setRole(r)}>
-                {r[0].toUpperCase() + r.slice(1)}
-              </button>
-            ))}
-          </div>
 
           <div className="form-group">
             <label>University Email</label>

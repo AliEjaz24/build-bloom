@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth, type AppRole } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { logger } from "@/lib/logger";
+import ibitLogo from "@/assets/ibitlogo.jpeg";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
@@ -112,7 +113,9 @@ function AppLayout() {
           {collapsed ? "▶" : "◀"}
         </button>
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">iB</div>
+          <div className="sidebar-logo-icon" style={{ overflow: "hidden", background: "white" }}>
+            <img src={ibitLogo} alt="iBIT" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          </div>
           <div>
             <div className="sidebar-logo-text"><span>iBIT</span> TimeDesk</div>
             <div className="sidebar-logo-sub">Schedule Portal</div>

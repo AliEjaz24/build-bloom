@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
+import ibitLogo from "@/assets/ibitlogo.jpeg";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
@@ -46,7 +47,9 @@ function LoginPage() {
       <div className="login-grid-bg" />
       <div className="login-wrap">
         <div className="login-brand">
-          <div className="login-brand-icon">iB</div>
+          <div className="login-brand-icon" style={{ overflow: "hidden", background: "white" }}>
+            <img src={ibitLogo} alt="iBIT" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          </div>
           <div>
             <div className="login-brand-name"><span>iBIT</span> TimeDesk</div>
             <div className="login-brand-sub">Executive Schedule Portal</div>

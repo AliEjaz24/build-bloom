@@ -33,24 +33,37 @@ function Dashboard() {
     (async () => {
       // notifications for everyone and specific user
       let nQ = supabase.from("notifications").select("id,title,message,created_at,read");
-      if (role) {
+      
+      let courseIds: string[] = [];
+      if (role === "student") {
+        const { data: regs } = await supabase.from("registrations").select("course_id").eq("student_id", profile.id);
+        courseIds = (regs as any[])?.map(x => x.course_id).filter(Boolean) || [];
+      }
+
+      if (role === "student" && courseIds.length > 0) {
+        nQ = nQ.or(`recipient_id.eq.${profile.id},audience.eq.student,recipient_id.is.null,course_id.in.(${courseIds.join(",")})`);
+      } else if (role) {
         nQ = nQ.or(`recipient_id.eq.${profile.id},audience.eq.${role},recipient_id.is.null`);
       } else {
         nQ = nQ.or(`recipient_id.eq.${profile.id},recipient_id.is.null`);
       }
+      
       const { data: n } = await nQ.order("created_at", { ascending: false }).limit(5);
       setNotifs((n as Notif[]) ?? []);
 
       if (role === "student" && profile.program && profile.batch && profile.section) {
+        const { data: regs } = await supabase
+          .from("registrations").select("course_id, courses(credit_hours)").eq("student_id", profile.id);
+        const r = (regs as any[]) ?? [];
+        const courseIds = r.map(x => x.course_id).filter(Boolean);
+        
         const { data } = await supabase
           .from("timetable_slots")
           .select("*, courses(code,title,credit_hours), rooms(code), profiles(full_name)")
-          .eq("program", profile.program).eq("batch", profile.batch).eq("section", profile.section);
+          .eq("program", profile.program).eq("batch", profile.batch).eq("section", profile.section)
+          .in("course_id", courseIds.length > 0 ? courseIds : ["00000000-0000-0000-0000-000000000000"]);
+          
         setSlots((data as Slot[]) ?? []);
-        const { data: regs } = await supabase
-          .from("registrations").select("course_id, courses(credit_hours)").eq("student_id", profile.id);
-        type Reg = { course_id: string; courses: { credit_hours: number } | null };
-        const r = (regs as Reg[]) ?? [];
         const ch = r.reduce((a, x) => a + (x.courses?.credit_hours ?? 0), 0);
         const todayCount = (data as Slot[] ?? []).filter(s => s.day === today).length;
         setStats(s => ({ ...s, courses: r.length, ch, classesToday: todayCount }));

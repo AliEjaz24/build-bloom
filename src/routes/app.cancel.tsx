@@ -46,11 +46,22 @@ function CancelPage() {
     if (error) { toast.error(error.message); return; }
     if (req?.teacher_id) {
       const code = req.courses?.code ?? "your class";
+      // Notify Teacher
       await supabase.from("notifications").insert({
         recipient_id: req.teacher_id,
         title: `Cancellation ${status} — ${code}`,
         message: `Your cancellation request for ${code} on ${req.cancel_date} was ${status}.`,
       });
+
+      // Notify Students
+      if (status === "approved" && req.courses?.id) {
+        await supabase.from("notifications").insert({
+          course_id: req.courses.id,
+          title: `Class Cancelled: ${code}`,
+          message: `The class for ${code} scheduled for ${req.cancel_date} has been cancelled.`,
+          audience: "student"
+        });
+      }
     }
     toast.success("Updated"); load();
   };

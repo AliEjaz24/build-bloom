@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 import ibitLogo from "@/assets/ibitlogo.jpeg";
@@ -11,6 +12,7 @@ type Role = "student" | "teacher" | "admin";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { semester, setSemester } = useAuth();
   const [role, setRole] = useState<Role>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,8 +61,6 @@ function LoginPage() {
         <form className="login-card" onSubmit={submit}>
           <div className="login-heading">Department Portal</div>
           <div className="login-sub">Sign in with your university credentials</div>
-
-
 
           <div className="form-group">
             <label>University Email</label>

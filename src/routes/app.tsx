@@ -49,11 +49,11 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
       { to: "/app/term-planner", label: "Term Timetable", icon: "📅" },
     ]},
     { section: "Data", items: [
-      { to: "/app/data", label: "Courses & Faculty", icon: "🗄" },
+      { to: "/app/data", label: "Academic Records", icon: "🗄" },
     ]},
     { section: "Requests", items: [
       { to: "/app/makeup", label: "Makeup Approvals", icon: "🔄" },
-      { to: "/app/cancel", label: "Cancel Approvals", icon: "❌" },
+      { to: "/app/cancel", label: "Class Cancellations", icon: "❌" },
     ]},
     { section: "Account", items: [
       { to: "/app/notifications", label: "Notifications", icon: "🔔" },
@@ -62,7 +62,7 @@ const NAV: Record<AppRole, { section: string; items: NavLink[] }[]> = {
 };
 
 function AppLayout() {
-  const { profile, role, loading, signOut } = useAuth();
+  const { profile, role, loading, signOut, semester, setSemester } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -78,25 +78,50 @@ function AppLayout() {
     if (!profile) return;
     const fetchUnread = async () => {
       if (!profile) return;
-      let q = supabase.from("notifications")
-        .select("id")
-        .eq("read", false);
       
-      if (role) {
+      let q = supabase.from("notifications").select("id, audience, batch, section, course_id").eq("read", false);
+      
+      if (role === "student") {
+        const { data: regs } = await supabase.from("registrations").select("course_id").eq("student_id", profile.id);
+        const courseIds = (regs as any[])?.map(x => x.course_id).filter(Boolean) || [];
+        const b = profile.batch ? String(profile.batch) : null;
+        const s = profile.section || null;
+
+        const baseFilter = `recipient_id.eq.${profile.id},recipient_id.is.null`;
+        let studentAudience = "audience.eq.student";
+        if (b) studentAudience = `and(${studentAudience},or(batch.is.null,batch.eq.${b}))`;
+        if (s) studentAudience = `and(${studentAudience},or(section.is.null,section.eq.${s}))`;
+        
+        const filterParts = [baseFilter, studentAudience];
+        if (courseIds.length > 0) filterParts.push(`course_id.in.(${courseIds.join(",")})`);
+        
+        q = q.or(filterParts.join(","));
+      } else if (role) {
         q = q.or(`recipient_id.eq.${profile.id},audience.eq.${role},recipient_id.is.null`);
       } else {
         q = q.or(`recipient_id.eq.${profile.id},recipient_id.is.null`);
       }
       
       const { data } = await q;
-      setUnreadCount(data?.length || 0);
+      
+      // Filter out locally read notifications
+      const readIds = JSON.parse(localStorage.getItem("ibit_read_notifs") || "[]");
+      const unread = (data || []).filter(n => !readIds.includes(n.id));
+      
+      setUnreadCount(unread.length);
     };
     fetchUnread();
+    
+    // Also listen for local storage changes to update the badge immediately
+    window.addEventListener("storage", fetchUnread);
     
     const sub = supabase.channel("notif_changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, fetchUnread)
       .subscribe();
-    return () => { supabase.removeChannel(sub); };
+    return () => { 
+      supabase.removeChannel(sub);
+      window.removeEventListener("storage", fetchUnread);
+    };
   }, [profile]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;

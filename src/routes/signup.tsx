@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth-context";
 import { PROGRAMS, BATCHES, SECTIONS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import ibitLogo from "@/assets/ibitlogo.jpeg";
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/signup")({
 
 function SignupPage() {
   const navigate = useNavigate();
+  const { semester, setSemester } = useAuth();
   const { role: initialRole } = Route.useSearch();
   const [role, setRole] = useState<Role>(initialRole);
   const [email, setEmail] = useState("");
@@ -125,6 +127,13 @@ function SignupPage() {
                 <label>Section</label>
                 <select className="form-input" value={section} onChange={(e) => setSection(e.target.value)}>
                   {SECTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div className="form-col">
+                <label>Term</label>
+                <select className="form-input" value={semester} onChange={(e) => setSemester(e.target.value)}>
+                  <option value="Fall">Fall</option>
+                  <option value="Spring">Spring</option>
                 </select>
               </div>
             </div>

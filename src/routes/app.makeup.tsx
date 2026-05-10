@@ -57,11 +57,22 @@ function MakeupPage() {
     if (error) { toast.error(error.message); return; }
     if (req?.teacher_id) {
       const code = req.courses?.code ?? "your class";
+      // Notify Teacher
       await supabase.from("notifications").insert({
         recipient_id: req.teacher_id,
         title: `Makeup ${status} — ${code}`,
         message: `Your makeup request for ${code} on ${req.proposed_date ?? "—"}${req.slot_index !== null ? ` (${TIME_SLOTS[req.slot_index]})` : ""} was ${status}.`,
       });
+
+      // Notify Students of this course
+      if (status === "approved" && req.course_id) {
+        await supabase.from("notifications").insert({
+          course_id: req.course_id,
+          title: `New Makeup Class: ${code}`,
+          message: `A makeup class for ${code} has been scheduled for ${req.proposed_date ?? "—"} at ${req.slot_index !== null ? TIME_SLOTS[req.slot_index] : "TBA"}.`,
+          audience: "student"
+        });
+      }
     }
     toast.success("Updated"); load();
   };

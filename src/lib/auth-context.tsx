@@ -23,6 +23,8 @@ interface AuthCtx {
   profile: Profile | null;
   role: AppRole | null;
   loading: boolean;
+  semester: string;
+  setSemester: (s: string) => void;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -34,6 +36,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [semester, setSemesterState] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("ibit_semester") || "Fall";
+    }
+    return "Fall";
+  });
+
+  const setSemester = (s: string) => {
+    setSemesterState(s);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ibit_semester", s);
+    }
+  };
 
   const loadAux = async (uid: string) => {
     logger.debug("Loading user profile and role", { uid });
@@ -70,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => { logger.info("User requested sign out"); await supabase.auth.signOut(); };
 
   return (
-    <Ctx.Provider value={{ session, user: session?.user ?? null, profile, role, loading, refresh, signOut }}>
+    <Ctx.Provider value={{ session, user: session?.user ?? null, profile, role, loading, semester, setSemester, refresh, signOut }}>
       {children}
     </Ctx.Provider>
   );

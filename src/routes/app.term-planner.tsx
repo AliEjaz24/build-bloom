@@ -34,7 +34,7 @@ const LABEL_PRESETS = [
 type Tab = "courses" | "midterm" | "final" | "weeks";
 
 function TermPlanner() {
-  const { role, profile } = useAuth();
+  const { role, profile, semester } = useAuth();
   const [terms, setTerms] = useState<Term[]>([]);
   const [termId, setTermId] = useState<string>("");
   const [tab, setTab] = useState<Tab>("courses");
@@ -44,13 +44,17 @@ function TermPlanner() {
       let t = (data as Term[]) ?? [];
       if (role === "student" && profile?.batch) {
         const batchStr = profile.batch.toString().slice(-2);
-        t = t.filter(x => x.label.includes(batchStr) || x.code.includes(batchStr));
+        // Filter by batch AND semester
+        t = t.filter(x => 
+          (x.label.includes(batchStr) || x.code.includes(batchStr)) &&
+          (x.label.toLowerCase().includes(semester.toLowerCase()) || x.code.toLowerCase().includes(semester.toLowerCase()))
+        );
       }
       setTerms(t);
       if (t.length && (!termId || !t.find(x => x.id === termId))) setTermId(t[0].id);
     });
     // eslint-disable-next-line
-  }, [role, profile?.batch, termId]);
+  }, [role, profile?.id, profile?.batch, semester]);
 
   return (
     <>

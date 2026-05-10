@@ -60,6 +60,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
+    //1. API Key to verify JWT Token and authenticate the user - Supabase provides us these API //
     const { data, error } = await supabase.auth.getClaims(token);
     if (error || !data?.claims) {
       throw new Response('Unauthorized: Invalid token', { status: 401 });

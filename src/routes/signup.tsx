@@ -78,7 +78,7 @@ function SignupPage() {
           <div className="login-sub">Register with your university credentials</div>
 
           <div className="role-tabs">
-            {(["student", "teacher", "admin"] as Role[]).map((r) => (
+            {(["student", "teacher"] as Role[]).map((r) => (
               <button type="button" key={r} className={`role-tab ${role === r ? "active" : ""}`} onClick={() => setRole(r)}>
                 {r[0].toUpperCase() + r.slice(1)}
               </button>
